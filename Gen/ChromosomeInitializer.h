@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Chromosome.h"
+#include "ChromosomeAsEdges.h"
 
 
 class ChromosomeInitializer
@@ -15,10 +15,11 @@ public:
 	ChromosomeInitializer(const size_t, const distarr_t&, randgen_t&);
 	~ChromosomeInitializer();
 
-	Chromosome* operator()();
+	chromosomeptr_t operator()();
 
 private:
-	void randomInitialize(Chromosome&) const;
-	void greedyInitialize(Chromosome&) const;
+	void randomInitialize(ChromosomeAsEdges&) const;
+	void greedyInitialize(ChromosomeAsEdges&) const;
+	chromosomeptr_t fromEdges(const ChromosomeAsEdges&) const;
 };
 

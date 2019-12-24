@@ -5,22 +5,22 @@ std::random_device Solution::rd;
 
 
 Solution::Solution(const std::string &filename) :
+	start(std::chrono::high_resolution_clock::now()), 
 	instance(std::make_unique<const Instance>(filename)),
 	n(instance->getN()),
 	distance(getDistanceArray()),
 	randomGenerator(std::make_unique<randgen_t>(rd())),
-	population(std::make_unique<Population>(n, *distance, *randomGenerator)),
-	start(std::chrono::high_resolution_clock::now())
+	population(std::make_unique<Population>(n, *distance, *randomGenerator))
 {
 	runGeneticAlgorithm();
 	stop = std::chrono::high_resolution_clock::now();
-	result = std::make_unique<Result>(n, population->getBest(), stop - start);
+	result = std::make_unique<Result>(n, generationCounter, population->getBest(), stop - start);
 }
 
 
 Solution::~Solution()
 {}
-
+	
 
 distarr_t* Solution::getDistanceArray() const
 {
@@ -51,14 +51,13 @@ void Solution::runGeneticAlgorithm()
 
 bool Solution::shouldContinue() const
 {
-	return noChangeCounter < std::max(MIN_GENERATIONS, generationCounter / GENERATIONS_DENOMINATOR) &&
-		generationCounter < 10000000u / n;
+	return noChangeCounter < std::max(MIN_GENERATIONS, generationCounter / GENERATIONS_DENOMINATOR);
 }
 
 
 void Solution::updateCounters()
 {
-	if (population->hasChanged())
+	if (population->hasChanged()) 
 		noChangeCounter = 0;
 	++generationCounter;
 	++noChangeCounter;

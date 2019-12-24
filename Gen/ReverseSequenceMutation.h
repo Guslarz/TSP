@@ -14,6 +14,6 @@ public:
 	ReverseSequenceMutation(const size_t, randgen_t&);
 	~ReverseSequenceMutation();
 
-	Chromosome* operator()(const Chromosome&);
+	void operator()(Chromosome&, const Chromosome&);
 };
 

@@ -13,16 +13,15 @@ SequentialConsecutiveCrossover::~SequentialConsecutiveCrossover()
 {}
 
 
-Chromosome* SequentialConsecutiveCrossover::operator()(const Chromosome &parent1, 
-	const Chromosome &parent2)
+void SequentialConsecutiveCrossover::operator()(Chromosome &child, 
+	const Chromosome &parent1, const Chromosome &parent2)
 {
-	bool *visited = new bool[n];
-	gene_t *next1 = new gene_t[n],
-		*next2 = new gene_t[n];
+	auto visited = std::vector<bool>(n);
+	auto next1 = std::vector<gene_t>(n),
+		next2 = std::vector<gene_t>(n);
 	size_t i;
 	gene_t current = 0, firstNotVisited = 0, tmp1, tmp2;
-	auto child = new Chromosome(n);
-	auto &childGenome = child->getGenome();
+	auto &childGenome = child.getGenome();
 	auto &parent1Genome = parent1.getGenome(),
 		&parent2Genome = parent2.getGenome();
 
@@ -58,7 +57,4 @@ Chromosome* SequentialConsecutiveCrossover::operator()(const Chromosome &parent1
 		visited[current] = true;
 		childGenome[i] = current;
 	}
-
-	delete[] visited, next1, next2;
-	return child;
 }

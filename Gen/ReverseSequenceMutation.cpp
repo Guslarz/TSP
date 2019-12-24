@@ -12,17 +12,25 @@ ReverseSequenceMutation::~ReverseSequenceMutation()
 {}
 
 
-Chromosome* ReverseSequenceMutation::operator()(const Chromosome &chromosome)
+void ReverseSequenceMutation::operator()(Chromosome &mutated, const Chromosome &initial)
 {
-	auto newChromosome = new Chromosome(chromosome);
-	auto &genome = newChromosome->getGenome();
+	auto &mutatedGenome = mutated.getGenome();
+	auto &initialGenome = initial.getGenome();
 
 	size_t i = distribution(randomGenerator), j;
 	while ((j = distribution(randomGenerator)) == i);
 	if (i > j) std::swap(i, j);
 
-	while (i < j)
-		std::swap(genome[i++], genome[j--]);
-
-	return newChromosome;
+	size_t index = 0;
+	while (index < i) {
+		mutatedGenome[index] = initialGenome[index];
+		++index;
+	}
+	while (j > i)
+		mutatedGenome[index++] = initialGenome[j--];
+	mutatedGenome[index++] = initialGenome[j];
+	while (index < n) {
+		mutatedGenome[index] = initialGenome[index];
+		++index;
+	}
 }

@@ -10,13 +10,16 @@ Population::Population(const size_t n, const distarr_t &distance, randgen_t &ran
 	chromosomeInitializer(std::make_unique<ChromosomeInitializer>(n, distance, randomGenerator)),
 	mutation(std::make_unique<ReverseSequenceMutation>(n, randomGenerator)),
 	crossover(std::make_unique<SequentialConsecutiveCrossover>(n, distance, randomGenerator)),
-	bestFitness(0)
+	bestFitness(0),
+	change(true)
 {
 	for (auto &chromosome : chromosomes) {
-		chromosome = chromosomeptr_t((*chromosomeInitializer)());
-		setFitness(*chromosome);
+		chromosome = (*chromosomeInitializer)();
+		chromosome->setFitness(distance);
 	}
 	evaluate();
+	for (auto &chromosome : breedingPool)
+		chromosome = std::make_unique<Chromosome>(n);
 }
 
 
@@ -26,7 +29,6 @@ Population::~Population()
 
 void Population::nextGeneration()
 {
-	bestFitness = chromosomes[0]->getFitness();
 	fillBreedingPool();
 	breed();
 	mutate();
@@ -35,19 +37,27 @@ void Population::nextGeneration()
 }
 
 
-void Population::setFitness(Chromosome &chromosome)
+const Chromosome& Population::getBest() const
 {
-	auto &genome = chromosome.getGenome();
-	fitness_t fitness = distance[genome[n - 1]][genome[0]];
-	for (size_t i = 1; i < n; ++i)
-		fitness += distance[genome[i - 1]][genome[i]];
-	chromosome.setFitness(fitness);
+	size_t best = 0, i = 1;
+	while (i < POPULATION_SIZE) {
+		if (chromosomes[i]->getFitness() < chromosomes[best]->getFitness())
+			best = i;
+		++i;
+	}
+	return *chromosomes[best];
 }
 
 
 void Population::evaluate()
 {
 	std::sort(chromosomes.begin(), chromosomes.end(), &compareFitness);
+	auto tmp = chromosomes[0]->getFitness();
+	if (bestFitness == tmp) change = false;
+	else {
+		change = true;
+		bestFitness = tmp;
+	}
 }
 
 
@@ -55,25 +65,30 @@ void Population::fillBreedingPool()
 {
 	size_t i = 0, j = 0;
 	while (i < FITTEST)
-		breedingPool[i++] = std::move(chromosomes[j++]);
+		breedingPool[i++].swap(chromosomes[j++]);
 	j += GAP_SIZE;
-	while (i < FITTEST + MIDDLE)
-		breedingPool[i++] = std::move(chromosomes[j++]);
+	while (i < FITTEST + MIDDLE + GAP_SIZE)
+		breedingPool[i++].swap(chromosomes[j++]);
 	j += GAP_SIZE;
 	while (i < BREEDING_POOL_SIZE)
-		breedingPool[i++] = std::move(chromosomes[j++]);
+		breedingPool[i++].swap(chromosomes[j++]);
 }
 
 
 void Population::breed()
 {
 	size_t index1, index2;
+	float random1, random2;
 	for (size_t i = 0; i < OFFSPRING_COUNT; ++i) {
-		index1 = distribution(randomGenerator);
-		while ((index2 = distribution(randomGenerator)) == index1);
+		random1 = std::generate_canonical<float, 3>(randomGenerator);
+		index2 = index1 = static_cast<size_t>(std::pow(random1, 1.5) * BREEDING_POOL_SIZE);
+		while (index2 == index1) {
+			random2 = std::generate_canonical<float, 3>(randomGenerator);
+			index2 = static_cast<size_t>(std::pow(random2, 1.5) * BREEDING_POOL_SIZE);
+		}
 
-		chromosomes[i] = chromosomeptr_t((*crossover)(*breedingPool[index1], *breedingPool[index2]));
-		setFitness(*chromosomes[i]);
+		(*crossover)(*chromosomes[i], *breedingPool[index1], *breedingPool[index2]);
+		chromosomes[i]->setFitness(distance);
 	}
 }
 
@@ -83,9 +98,8 @@ void Population::mutate()
 	size_t index;
 	for (size_t i = 0; i < MUTANTS_COUNT; ++i) {
 		index = distribution(randomGenerator);
-
-		chromosomes[OFFSPRING_COUNT + i] = chromosomeptr_t((*mutation)(*breedingPool[index]));
-		setFitness(*chromosomes[OFFSPRING_COUNT + i]);
+		(*mutation)(*chromosomes[OFFSPRING_COUNT + i] , *breedingPool[index]);
+		chromosomes[OFFSPRING_COUNT + i]->setFitness(distance);
 	}
 }
 
@@ -93,7 +107,7 @@ void Population::mutate()
 void Population::elite()
 {
 	for (size_t i = 0; i < ELITE_COUNT; ++i)
-		chromosomes[OFFSPRING_COUNT + MUTANTS_COUNT + i] = std::move(breedingPool[i]);
+		chromosomes[OFFSPRING_COUNT + MUTANTS_COUNT + i].swap(breedingPool[i]);
 }
 
 

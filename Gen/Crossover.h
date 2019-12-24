@@ -8,5 +8,5 @@ class Crossover
 public:
 	virtual ~Crossover() {};
 
-	virtual Chromosome* operator()(const Chromosome&, const Chromosome&) = 0;
+	virtual void operator()(Chromosome&, const Chromosome&, const Chromosome&) = 0;
 };

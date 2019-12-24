@@ -14,6 +14,6 @@ public:
 	SequentialConsecutiveCrossover(const size_t, const distarr_t&, randgen_t&);
 	~SequentialConsecutiveCrossover();
 
-	Chromosome* operator()(const Chromosome&, const Chromosome&);
+	void operator()(Chromosome&, const Chromosome&, const Chromosome&);
 };
 

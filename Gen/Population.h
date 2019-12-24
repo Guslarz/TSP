@@ -8,7 +8,7 @@
 
 
 constexpr size_t
-POPULATION_SIZE = 20,
+POPULATION_SIZE = 52,
 //selection
 FITTEST = static_cast<size_t>(0.5 * POPULATION_SIZE),
 MIDDLE = static_cast<size_t>(0.2 * POPULATION_SIZE),
@@ -20,7 +20,7 @@ ELITE_COUNT = 1;
 
 //breeding and mutation
 constexpr float
-MUTATION_CHANCE = 0.3f;
+MUTATION_CHANCE = 0.1f;
 constexpr size_t
 MUTANTS_COUNT = static_cast<size_t>(MUTATION_CHANCE * POPULATION_SIZE),
 OFFSPRING_COUNT = POPULATION_SIZE - ELITE_COUNT - MUTANTS_COUNT;
@@ -42,19 +42,19 @@ class Population
 	std::array<chromosomeptr_t, BREEDING_POOL_SIZE> breedingPool;
 
 	fitness_t bestFitness;
+	bool change;
 
 public:
 	Population(const size_t, const distarr_t&, randgen_t&);
 	~Population();
 
 	void nextGeneration();
-	bool hasChanged() const { return chromosomes.front()->getFitness() == bestFitness; }
-	const Chromosome& getBest() const { return *chromosomes.front(); }
+	bool hasChanged() const { return change; }
+	const Chromosome& getBest() const;
 
 	friend std::ostream& operator<<(std::ostream&, const Population&);
 
 private:
-	void setFitness(Chromosome&);
 	void evaluate();
 	void fillBreedingPool();
 	void breed();

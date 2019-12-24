@@ -8,6 +8,6 @@ class Mutation
 public:
 	virtual ~Mutation() {};
 
-	virtual Chromosome* operator()(const Chromosome&) = 0;
+	virtual void operator()(Chromosome&, const Chromosome&) = 0;
 };
 
