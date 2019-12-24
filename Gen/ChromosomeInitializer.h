@@ -20,6 +20,7 @@ public:
 private:
 	void randomInitialize(ChromosomeAsEdges&) const;
 	void greedyInitialize(ChromosomeAsEdges&) const;
+	void apply4Perm(ChromosomeAsEdges&) const;
 	chromosomeptr_t fromEdges(const ChromosomeAsEdges&) const;
 };
 

@@ -17,9 +17,8 @@ ChromosomeInitializer::~ChromosomeInitializer()
 chromosomeptr_t ChromosomeInitializer::operator()()
 {
 	auto chromosome = std::make_unique<ChromosomeAsEdges>(n);
-	if (first == n) {
+	if (first == n)
 		randomInitialize(*chromosome);
-	}
 	else {
 		greedyInitialize(*chromosome);
 		++first;
@@ -59,6 +58,12 @@ void ChromosomeInitializer::greedyInitialize(ChromosomeAsEdges &chromosome) cons
 		visited[current] = true;
 	}
 	chromosome.addEdge({ current, first, distance });
+}
+
+
+void ChromosomeInitializer::apply4Perm(ChromosomeAsEdges &initial) const
+{
+	//std::shared_ptr<ChromosomeAsEdges> initialptr = &initial;
 }
 
 
