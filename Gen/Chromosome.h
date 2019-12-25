@@ -30,6 +30,8 @@ public:
 
 	void setFitness(const distarr_t&);
 
+	static bool compare(const chromosomeptr_t &l, const chromosomeptr_t &r) { return l->fitness < r->fitness; }
+
 	friend std::ostream& operator<<(std::ostream&, const Chromosome&);
 };
 

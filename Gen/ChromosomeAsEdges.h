@@ -4,6 +4,7 @@
 
 
 using edgearr_t = std::vector<std::vector<bool>>;
+using asedgesptr_t = std::shared_ptr<class ChromosomeAsEdges>;
 
 class ChromosomeAsEdges
 {
@@ -23,5 +24,8 @@ public:
 
 	edgearr_t& getEdges() { return edge; }
 	const edgearr_t& getEdges() const { return edge; }
+	fitness_t getFitness() const { return fitness; }
+
+	static bool compare(const asedgesptr_t &l, const asedgesptr_t &r) { return l->fitness < r->fitness; }
 };
 

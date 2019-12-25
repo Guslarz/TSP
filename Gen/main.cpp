@@ -3,6 +3,6 @@
 
 int main()
 {
-	Solution solution("berlin52.txt");
+	Solution solution("tsp500.txt");
 	std::cout << solution.getResult() << std::endl;
 }

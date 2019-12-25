@@ -7,16 +7,19 @@ Population::Population(const size_t n, const distarr_t &distance, randgen_t &ran
 	distance(distance),
 	randomGenerator(randomGenerator),
 	distribution(0, BREEDING_POOL_SIZE - 1),
-	chromosomeInitializer(std::make_unique<ChromosomeInitializer>(n, distance, randomGenerator)),
 	mutation(std::make_unique<ReverseSequenceMutation>(n, randomGenerator)),
 	crossover(std::make_unique<SequentialConsecutiveCrossover>(n, distance, randomGenerator)),
-	bestFitness(0),
 	change(true)
 {
+	std::cout << "Generowanie populacji" << std::endl;
+
+	auto chromosomeInitializer = std::make_unique<ChromosomeInitializer>(n, distance, randomGenerator);
+
 	for (auto &chromosome : chromosomes) {
 		chromosome = (*chromosomeInitializer)();
 		chromosome->setFitness(distance);
 	}
+	bestFitness = chromosomes.front()->getFitness();
 	evaluate();
 	for (auto &chromosome : breedingPool)
 		chromosome = std::make_unique<Chromosome>(n);
@@ -51,13 +54,13 @@ const Chromosome& Population::getBest() const
 
 void Population::evaluate()
 {
-	std::sort(chromosomes.begin(), chromosomes.end(), &compareFitness);
+	std::sort(chromosomes.begin(), chromosomes.end(), &Chromosome::compare);
 	auto tmp = chromosomes[0]->getFitness();
-	if (bestFitness == tmp) change = false;
-	else {
+	if ((bestFitness - tmp) / tmp >= MINIMUM_CHANGE_PERC) {
 		change = true;
 		bestFitness = tmp;
 	}
+	else change = false;
 }
 
 
@@ -81,10 +84,10 @@ void Population::breed()
 	float random1, random2;
 	for (size_t i = 0; i < OFFSPRING_COUNT; ++i) {
 		random1 = std::generate_canonical<float, 3>(randomGenerator);
-		index2 = index1 = static_cast<size_t>(std::pow(random1, 1.5) * BREEDING_POOL_SIZE);
+		index2 = index1 = static_cast<size_t>(std::pow(random1, PARENT_INDEX_EXP) * BREEDING_POOL_SIZE);
 		while (index2 == index1) {
 			random2 = std::generate_canonical<float, 3>(randomGenerator);
-			index2 = static_cast<size_t>(std::pow(random2, 1.5) * BREEDING_POOL_SIZE);
+			index2 = static_cast<size_t>(std::pow(random2, PARENT_INDEX_EXP) * BREEDING_POOL_SIZE);
 		}
 
 		(*crossover)(*chromosomes[i], *breedingPool[index1], *breedingPool[index2]);
@@ -116,10 +119,4 @@ std::ostream& operator<<(std::ostream &out, const Population &population)
 	for (auto &chromosome : population.chromosomes)
 		out << chromosome->getFitness() << "\n";
 	return out;
-}
-
-
-bool compareFitness(const chromosomeptr_t &l, const chromosomeptr_t &r)
-{
-	return l->getFitness() < r->getFitness();
 }

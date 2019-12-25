@@ -5,14 +5,9 @@
 
 
 
-Instance::Instance(std::istream &in)
-{
-	*this << in;
-}
-
-
 Instance::Instance(const std::string &filename)
 {
+	std::cout << "Wczytywanie daych" << std::endl;
 	std::fstream in(filename, std::ios::in);
 	*this << in;
 	in.close();

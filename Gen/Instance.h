@@ -10,7 +10,6 @@ class Instance
 	std::vector<Point> points;
 
 public:
-	Instance(std::istream&);
 	Instance(const std::string&);
 
 	~Instance();

@@ -6,8 +6,18 @@ ChromosomeInitializer::ChromosomeInitializer(const size_t n, const distarr_t &di
 	n(n),
 	distance(distance),
 	randomGenerator(randomGenerator),
-	first(0)
-{}
+	first(0),
+	improvedLimit(1000000 / (n * n)),
+	greedyChromosomes(n)
+{
+	for (auto &chromosome : greedyChromosomes) {
+		chromosome = std::make_unique<Chromosome>(n);
+		greedyInitialize(*chromosome);
+		++first;
+	}
+	first = 0;
+	std::sort(greedyChromosomes.begin(), greedyChromosomes.end(), &Chromosome::compare);
+}
 
 
 ChromosomeInitializer::~ChromosomeInitializer()
@@ -16,35 +26,37 @@ ChromosomeInitializer::~ChromosomeInitializer()
 
 chromosomeptr_t ChromosomeInitializer::operator()()
 {
-	auto chromosome = std::make_unique<ChromosomeAsEdges>(n);
-	if (first == n)
+	chromosomeptr_t chromosome;
+	if (first >= n) {
+		chromosome = std::make_unique<Chromosome>(n);
 		randomInitialize(*chromosome);
-	else {
-		greedyInitialize(*chromosome);
-		++first;
 	}
-	return fromEdges(*chromosome);
+	else
+		chromosome.swap(greedyChromosomes[first]);
+	if (first < improvedLimit) 
+		improve(*chromosome);
+	++first;
+	return chromosome;
 }
 
 
-void ChromosomeInitializer::randomInitialize(ChromosomeAsEdges &chromosome) const
+void ChromosomeInitializer::randomInitialize(Chromosome &chromosome) const
 {
-	std::vector<gene_t> genome(n);
+	auto &genome = chromosome.getGenome();
 	for (size_t i = 0; i < n; ++i)
 		genome[i] = i;
-	std::shuffle(genome.begin(), genome.end(), randomGenerator);
-
-	for (auto it1 = genome.begin(), it2 = genome.end() - 1; it1 != genome.end(); it2 = it1++)
-		chromosome.addEdge({ *it1, *it2, distance });
+	std::shuffle(genome.begin() + 1, genome.end(), randomGenerator);
 }
 
 
-void ChromosomeInitializer::greedyInitialize(ChromosomeAsEdges &chromosome) const
+void ChromosomeInitializer::greedyInitialize(Chromosome &chromosome) const
 {
+	auto &genome = chromosome.getGenome();
 	size_t i, j, current = first, next, firstNotVisited = 0;
 	std::vector<bool> visited(n);
 
 	visited[current] = true;
+	genome[0] = current;
 	for (i = 1; i < n; ++i) {
 		while (visited[firstNotVisited]) ++firstNotVisited;
 		next = firstNotVisited;
@@ -53,39 +65,35 @@ void ChromosomeInitializer::greedyInitialize(ChromosomeAsEdges &chromosome) cons
 			if (!visited[j] && distance[current][j] < distance[current][next])
 				next = j;
 
-		chromosome.addEdge({ current, next, distance });
 		current = next;
-		visited[current] = true;
-	}
-	chromosome.addEdge({ current, first, distance });
-}
-
-
-void ChromosomeInitializer::apply4Perm(ChromosomeAsEdges &initial) const
-{
-	//std::shared_ptr<ChromosomeAsEdges> initialptr = &initial;
-}
-
-
-chromosomeptr_t ChromosomeInitializer::fromEdges(const ChromosomeAsEdges &chromosome) const
-{
-	auto newChromosome = std::make_unique<Chromosome>(n);
-	auto &genome = newChromosome->getGenome();
-	auto &edges = chromosome.getEdges();
-	std::vector<bool> visited(n, false);
-	size_t i, current = 0, next;
-
-	visited[current] = true;
-	genome[0] = current;
-
-	for (i = 1; i < n; ++i) {
-		next = 1;
-		while (visited[next] || !edges[current][next]) ++next;
-
-		current = next;
-		visited[current] = true;
 		genome[i] = current;
+		visited[current] = true;
+	}
+}
+
+
+void ChromosomeInitializer::improve(Chromosome &chromosome) const
+{
+	auto &genome = chromosome.getGenome();
+	bool improved = true;
+	fitness_t currentFitness = chromosome.getFitness();
+
+	while (improved) {
+		improved = false;
+		for (size_t i = 0; i < n; ++i) {
+			for (size_t j = i + 1; j < n; ++j) {
+				std::swap(genome[i], genome[j]);
+				chromosome.setFitness(distance);
+				if (chromosome.getFitness() < currentFitness) {
+					currentFitness = chromosome.getFitness();
+					improved = true;
+				}
+				else {
+					std::swap(genome[i], genome[j]);
+					chromosome.setFitness(distance);
+				}
+			}
+		}
 	}
 
-	return newChromosome;
 }

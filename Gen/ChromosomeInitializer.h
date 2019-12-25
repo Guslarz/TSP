@@ -10,6 +10,8 @@ class ChromosomeInitializer
 	randgen_t &randomGenerator;
 
 	gene_t first;
+	const gene_t improvedLimit;
+	std::vector<chromosomeptr_t> greedyChromosomes;
 
 public:
 	ChromosomeInitializer(const size_t, const distarr_t&, randgen_t&);
@@ -18,9 +20,8 @@ public:
 	chromosomeptr_t operator()();
 
 private:
-	void randomInitialize(ChromosomeAsEdges&) const;
-	void greedyInitialize(ChromosomeAsEdges&) const;
-	void apply4Perm(ChromosomeAsEdges&) const;
-	chromosomeptr_t fromEdges(const ChromosomeAsEdges&) const;
+	void randomInitialize(Chromosome&) const;
+	void greedyInitialize(Chromosome&) const;
+	void improve(Chromosome&) const;
 };
 

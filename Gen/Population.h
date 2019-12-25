@@ -8,7 +8,7 @@
 
 
 constexpr size_t
-POPULATION_SIZE = 52,
+POPULATION_SIZE = 200,
 //selection
 FITTEST = static_cast<size_t>(0.5 * POPULATION_SIZE),
 MIDDLE = static_cast<size_t>(0.2 * POPULATION_SIZE),
@@ -16,14 +16,17 @@ WORST = static_cast<size_t>(0.1 * POPULATION_SIZE),
 BREEDING_POOL_SIZE = FITTEST + MIDDLE + WORST,
 GAP_SIZE = (POPULATION_SIZE - BREEDING_POOL_SIZE) / 2,
 //elite
-ELITE_COUNT = 1;
+ELITE_COUNT = 10;
 
 //breeding and mutation
 constexpr float
-MUTATION_CHANCE = 0.1f;
+MUTATION_CHANCE = 0.3f;
 constexpr size_t
 MUTANTS_COUNT = static_cast<size_t>(MUTATION_CHANCE * POPULATION_SIZE),
 OFFSPRING_COUNT = POPULATION_SIZE - ELITE_COUNT - MUTANTS_COUNT;
+constexpr double
+PARENT_INDEX_EXP = 4.0,
+MINIMUM_CHANGE_PERC = 0.005;
 
 
 class Population
@@ -34,7 +37,6 @@ class Population
 
 	std::uniform_int_distribution<size_t> distribution;
 
-	const std::unique_ptr<ChromosomeInitializer> chromosomeInitializer;
 	const std::unique_ptr<Mutation> mutation;
 	const std::unique_ptr<Crossover> crossover;
 
@@ -64,5 +66,4 @@ private:
 
 
 std::ostream& operator<<(std::ostream&, const Population&);
-bool compareFitness(const chromosomeptr_t&, const chromosomeptr_t&);
 

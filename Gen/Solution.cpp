@@ -12,8 +12,13 @@ Solution::Solution(const std::string &filename) :
 	randomGenerator(std::make_unique<randgen_t>(rd())),
 	population(std::make_unique<Population>(n, *distance, *randomGenerator))
 {
+	std::cout << "Start" << std::endl;
+
 	runGeneticAlgorithm();
 	stop = std::chrono::high_resolution_clock::now();
+
+	std::cout << "Stop" << std::endl;
+
 	result = std::make_unique<Result>(n, generationCounter, population->getBest(), stop - start);
 }
 
@@ -57,8 +62,10 @@ bool Solution::shouldContinue() const
 
 void Solution::updateCounters()
 {
-	if (population->hasChanged()) 
+	if (population->hasChanged()) {
+		std::cout << generationCounter << std::endl;
 		noChangeCounter = 0;
+	}
 	++generationCounter;
 	++noChangeCounter;
 }
