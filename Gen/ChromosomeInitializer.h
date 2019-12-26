@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ChromosomeAsEdges.h"
+#include "Chromosome.h"
 
 
 class ChromosomeInitializer
@@ -9,7 +9,7 @@ class ChromosomeInitializer
 	const distarr_t &distance;
 	randgen_t &randomGenerator;
 
-	gene_t first;
+	gene_t index;
 	const gene_t improvedLimit;
 	std::vector<chromosomeptr_t> greedyChromosomes;
 

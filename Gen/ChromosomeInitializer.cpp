@@ -6,16 +6,16 @@ ChromosomeInitializer::ChromosomeInitializer(const size_t n, const distarr_t &di
 	n(n),
 	distance(distance),
 	randomGenerator(randomGenerator),
-	first(0),
+	index(1),
 	improvedLimit(1000000 / (n * n)),
-	greedyChromosomes(n)
+	greedyChromosomes(n - 1)
 {
 	for (auto &chromosome : greedyChromosomes) {
 		chromosome = std::make_unique<Chromosome>(n);
 		greedyInitialize(*chromosome);
-		++first;
+		++index;
 	}
-	first = 0;
+	index = 0;
 	std::sort(greedyChromosomes.begin(), greedyChromosomes.end(), &Chromosome::compare);
 }
 
@@ -27,15 +27,15 @@ ChromosomeInitializer::~ChromosomeInitializer()
 chromosomeptr_t ChromosomeInitializer::operator()()
 {
 	chromosomeptr_t chromosome;
-	if (first >= n) {
+	if (index < n - 1)
+		chromosome.swap(greedyChromosomes[index]);
+	else {
 		chromosome = std::make_unique<Chromosome>(n);
 		randomInitialize(*chromosome);
 	}
-	else
-		chromosome.swap(greedyChromosomes[first]);
-	if (first < improvedLimit) 
+	if (index < improvedLimit) 
 		improve(*chromosome);
-	++first;
+	++index;
 	return chromosome;
 }
 
@@ -52,12 +52,14 @@ void ChromosomeInitializer::randomInitialize(Chromosome &chromosome) const
 void ChromosomeInitializer::greedyInitialize(Chromosome &chromosome) const
 {
 	auto &genome = chromosome.getGenome();
-	size_t i, j, current = first, next, firstNotVisited = 0;
+	size_t i, j, current = index, next, firstNotVisited = 0;
 	std::vector<bool> visited(n);
 
+	visited[0] = true;
+	genome[0] = 0;
 	visited[current] = true;
-	genome[0] = current;
-	for (i = 1; i < n; ++i) {
+	genome[1] = current;
+	for (i = 2; i < n; ++i) {
 		while (visited[firstNotVisited]) ++firstNotVisited;
 		next = firstNotVisited;
 
@@ -80,7 +82,7 @@ void ChromosomeInitializer::improve(Chromosome &chromosome) const
 
 	while (improved) {
 		improved = false;
-		for (size_t i = 0; i < n; ++i) {
+		for (size_t i = 1; i < n; ++i) {
 			for (size_t j = i + 1; j < n; ++j) {
 				std::swap(genome[i], genome[j]);
 				chromosome.setFitness(distance);
@@ -95,5 +97,4 @@ void ChromosomeInitializer::improve(Chromosome &chromosome) const
 			}
 		}
 	}
-
 }

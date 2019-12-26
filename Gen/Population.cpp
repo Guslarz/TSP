@@ -70,7 +70,7 @@ void Population::fillBreedingPool()
 	while (i < FITTEST)
 		breedingPool[i++].swap(chromosomes[j++]);
 	j += GAP_SIZE;
-	while (i < FITTEST + MIDDLE + GAP_SIZE)
+	while (i < FITTEST + MIDDLE)
 		breedingPool[i++].swap(chromosomes[j++]);
 	j += GAP_SIZE;
 	while (i < BREEDING_POOL_SIZE)
@@ -117,6 +117,10 @@ void Population::elite()
 std::ostream& operator<<(std::ostream &out, const Population &population)
 {
 	for (auto &chromosome : population.chromosomes)
-		out << chromosome->getFitness() << "\n";
+		out << *chromosome << "\n";
+		//out << chromosome->getFitness() << "\n";
+	std::cout << "---\n";
+	for (auto &chromosome : population.breedingPool)
+		out << *chromosome << "\n";
 	return out;
 }

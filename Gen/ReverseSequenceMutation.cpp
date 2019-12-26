@@ -4,7 +4,7 @@
 ReverseSequenceMutation::ReverseSequenceMutation(const size_t n, randgen_t &randomGenerator) :
 	n(n),
 	randomGenerator(randomGenerator),
-	distribution(0, n - 1)
+	distribution(1, n - 1)
 {}
 
 
@@ -26,9 +26,8 @@ void ReverseSequenceMutation::operator()(Chromosome &mutated, const Chromosome &
 		mutatedGenome[index] = initialGenome[index];
 		++index;
 	}
-	while (j > i)
+	while (j >= i)
 		mutatedGenome[index++] = initialGenome[j--];
-	mutatedGenome[index++] = initialGenome[j];
 	while (index < n) {
 		mutatedGenome[index] = initialGenome[index];
 		++index;
