@@ -77,23 +77,18 @@ void ChromosomeInitializer::greedyInitialize(Chromosome &chromosome) const
 void ChromosomeInitializer::improve(Chromosome &chromosome) const
 {
 	auto &genome = chromosome.getGenome();
-	bool improved = true;
 	fitness_t currentFitness = chromosome.getFitness();
 
-	while (improved) {
-		improved = false;
-		for (size_t i = 1; i < n; ++i) {
-			for (size_t j = i + 1; j < n; ++j) {
+	for (size_t i = 1; i < n; ++i) {
+		for (size_t j = i + 1; j < n; ++j) {
+			std::swap(genome[i], genome[j]);
+			chromosome.setFitness(distance);
+			if (chromosome.getFitness() < currentFitness) {
+				currentFitness = chromosome.getFitness();
+			}
+			else {
 				std::swap(genome[i], genome[j]);
 				chromosome.setFitness(distance);
-				if (chromosome.getFitness() < currentFitness) {
-					currentFitness = chromosome.getFitness();
-					improved = true;
-				}
-				else {
-					std::swap(genome[i], genome[j]);
-					chromosome.setFitness(distance);
-				}
 			}
 		}
 	}

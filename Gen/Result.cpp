@@ -20,6 +20,6 @@ std::ostream& operator<<(std::ostream &out, const Result &result)
 	out << "Liczba wierzcholkow: " << result.n << "\n";
 	out << "Liczba iteracji: " << result.generation << "\n";
 	out << "Dystans: " << result.chromosome.getFitness() << "\n";
-	out << "Czas: " << result.duration.count() << " s\n";
+	out << "Czas: " << result.duration.count() << "s\n";
 	return out;
 }
