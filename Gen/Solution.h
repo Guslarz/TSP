@@ -7,11 +7,11 @@
 
 constexpr unsigned int
 MIN_GENERATIONS = 300,
-GENERATIONS_DENOMINATOR = 3;
+GENERATIONS_DENOMINATOR = 2;
 
 
 class Solution
-{
+{	
 	const std::unique_ptr<const Instance> instance;
 	const size_t n;
 	const std::unique_ptr<const distarr_t> distance;

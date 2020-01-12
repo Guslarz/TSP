@@ -16,6 +16,7 @@ public:
 
 	size_t getN() const { return points.size(); }
 	const std::vector<Point>& getPoints() const { return points; }
+	const Point& getCity(size_t i) const { return points[i]; }
 
 	static void generate(const std::string&, const size_t, const int);
 

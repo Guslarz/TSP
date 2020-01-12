@@ -25,7 +25,7 @@ constexpr size_t
 MUTANTS_COUNT = static_cast<size_t>(MUTATION_CHANCE * POPULATION_SIZE),
 OFFSPRING_COUNT = POPULATION_SIZE - ELITE_COUNT - MUTANTS_COUNT;
 constexpr double
-PARENT_INDEX_EXP = 1.5,
+PARENT_INDEX_EXP = 10,
 MINIMUM_CHANGE_PERC = 0.001;
 
 
@@ -54,7 +54,10 @@ public:
 	bool hasChanged() const { return change; }
 	const Chromosome& getBest() const;
 
+	void printRepresentation(std::ostream &out, const Instance &instance) { getBest().printRepresentation(out, instance); out << std::endl; }
+
 	friend std::ostream& operator<<(std::ostream&, const Population&);
+	friend class Solution;
 
 private:
 	void evaluate();

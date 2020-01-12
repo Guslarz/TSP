@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Instance.h"
+
 #include <vector>
 #include <memory>
 #include <iostream>
@@ -33,6 +35,7 @@ public:
 	static bool compare(const chromosomeptr_t &l, const chromosomeptr_t &r) { return l->fitness < r->fitness; }
 
 	friend std::ostream& operator<<(std::ostream&, const Chromosome&);
+	void printRepresentation(std::ostream&, const Instance&) const;
 };
 
 

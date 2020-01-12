@@ -33,6 +33,14 @@ std::ostream& operator<<(std::ostream &out, const Chromosome &chromosome)
 {
 	for (auto gene : chromosome.genome)
 		out << gene << " ";
-	out << chromosome.genome.front();
+	out << chromosome.genome.front() << " " << chromosome.fitness;
 	return out;
+}
+
+
+void Chromosome::printRepresentation(std::ostream &out, const Instance &instance) const
+{
+	for (auto &gene : genome)
+		out << instance.getCity(gene) << " ";
+	out << instance.getCity(genome[0]);
 }

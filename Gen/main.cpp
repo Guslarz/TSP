@@ -3,6 +3,6 @@
 
 int main()
 {
-	Solution solution("tsp1000.txt");
+	Solution solution("operators.txt");
 	std::cout << solution.getResult() << std::endl;
 }
