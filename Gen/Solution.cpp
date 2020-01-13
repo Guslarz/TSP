@@ -63,7 +63,7 @@ void Solution::runGeneticAlgorithm()
 	/*population->printRepresentation(out, *instance);
 	out.close();*/
 
-	std::fstream out("out.txt", std::ios::out);
+	/*std::fstream out("out.txt", std::ios::out);
 	Chromosome c1(population->getBest()), c2(c1), c3(c1), c4(c1), c5(c1);
 	c1.printRepresentation(out, *instance);
 	out << std::endl;
@@ -81,7 +81,7 @@ void Solution::runGeneticAlgorithm()
 	c5.printRepresentation(out, *instance);
 	out << std::endl;
 
-	out.close();
+	out.close();*/
 }
 
 

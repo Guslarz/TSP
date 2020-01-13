@@ -7,7 +7,7 @@
 
 constexpr unsigned int
 MIN_GENERATIONS = 300,
-GENERATIONS_DENOMINATOR = 2;
+GENERATIONS_DENOMINATOR = 3;
 
 
 class Solution

@@ -11,8 +11,8 @@ constexpr size_t
 POPULATION_SIZE = 250,
 //selection
 FITTEST = static_cast<size_t>(0.4 * POPULATION_SIZE),
-MIDDLE = static_cast<size_t>(0.1 * POPULATION_SIZE),
-WORST = static_cast<size_t>(0.05 * POPULATION_SIZE),
+MIDDLE = static_cast<size_t>(0.15 * POPULATION_SIZE),
+WORST = static_cast<size_t>(0.1 * POPULATION_SIZE),
 BREEDING_POOL_SIZE = FITTEST + MIDDLE + WORST,
 GAP_SIZE = (POPULATION_SIZE - BREEDING_POOL_SIZE) / 2,
 //elite
@@ -20,12 +20,12 @@ ELITE_COUNT = 10;
 
 //breeding and mutation
 constexpr float
-MUTATION_CHANCE = 0.3f;
+MUTATION_CHANCE = 0.4f;
 constexpr size_t
 MUTANTS_COUNT = static_cast<size_t>(MUTATION_CHANCE * POPULATION_SIZE),
 OFFSPRING_COUNT = POPULATION_SIZE - ELITE_COUNT - MUTANTS_COUNT;
 constexpr double
-PARENT_INDEX_EXP = 10,
+PARENT_INDEX_EXP = 1.5,
 MINIMUM_CHANGE_PERC = 0.001;
 
 
